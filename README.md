@@ -2,56 +2,6 @@
 Cleaning and Analysis files 
 
 # Individual Participant 
-Exp2_csvCombo_P162XX.R - cleans, codes, accuracy etc... 14 csvs from presentation and compiles to one csv (see Below)
+Exp2_csvCombo_P162XX.R - cleans, codes, accuracy etc... 14 csvs from presentation and compiles to one csv (see Notes page)
 
-  
-###### ~/Documents/Documents/01 - UofT/Foundation/Experiments/Exp_2/Cleaned_Files
-Data preparation -> takes the output from presentation and creates one csv per participant #github
-* 1 - 1000 -> assemble 14 csv from presentation and first line of cleaning per participants
-  * note output files (.log & .txt) needs to be converted to csvs and renamed to Pz_BX.csv and Txt_BX.csv
-* 1001 - 1029 Halt for duplicates  -> stops program to check duplicates
-  * 1001 -> “break”
-  * CMD+ F “halt”
-  * check out the dupes files in the environment window
-    * if dupes are indicated (observations > 0) then uncomment the corresponding “dupes_all” segment and run it
-    * look at the dupes_all datafile -> open corresponding “detect_X”  from the enviro window - note trial or row numbers & navigate to there
-    * keep vs. Remove dupes rules 
-      * -> if correcting first response keep first response
-      * -> if jumped response (before the target) if jump is =< 600ms remove and keep response post target
-      * there should only be one response per trial
-    * transfer row numbers to the the section below to remove them
-    * run that block and cross check each detect_X to make sure the right rows are removed
-  * Once the dupes are sorted out then run the rest of the code
-* 1030 - 1275 - Continue Cleaning - repeat steps for each block -> note Test has own section
-  * Pivot_wider 
-  * split condition column
-  * recode & select
-  * add exposure numbers 1 -24 and 26 (25th exposure is the test prime)
-* 1276 - 1490 Final recoding and Accuracy checks (test has one stage to go still)
-  * Wav & RMSQ
-  * recode columns
-  * harmonize presentation rt times
-  * safety cross check
-  * calculate outliers per person using the median 
-  * assemble data frame
-  * -> save the cleaned csv for later analysis
-Should really end here but doesn’t - ditch the yucky stuff (new RMD would be an idea?)
-Needs to confirm above 70% acc for each
-
-Plots 1490 - 1650
-* remove errors, remove > 200. , remove outliers to 2 SD
-* Box Plot ALL
-* Scatter Plots ALL
-* rt summary table ALL
-  * Exp Only
-  * Scatter Block x Condition
-  * Boxplot Block x Condition
-  * rt tables
-
-Test Accuracy
-* test rt tables
-* test Old New tables
-* test location tables
-* world’s ugliest violin plot
-* prelim frequency distribution table
   
