@@ -1,0 +1,56 @@
+---
+title: "P16317_1_Exp3 Descriptives"
+author: "A Sampson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Based on csvCOMBO_AugXX.R 
+
+Participant meets performance - check demographics
+
+**Accuracy by condition** - Proportion Correct Responses and Average RTs. 
+
+  **Mean SD Average rt by Condition**. 
+
+
+![](cond_Box.png){width=50%}![](AVG_rt_Cond_Means.png){width=50%}. 
+  
+Exposure without Test 
+
+![](cond_block_Box.png){width=50%}![](ALL_AVG_rt_Cond_Means.png){width=45%}. 
+![](All_cond_block_Box.png){width=45%}.
+
+Test Information
+
+**Old New - Error counts (potential 8 per condition - Fixed, Random, Test)**.
+.
+
+
+**Location as Left | Right | New (New scene No Tone) Error counts (potential 8 per condition - Fixed, Random, Test)**.
+.
+
+.
+
+![](Detect_Test_Prop.png){width=45%}.
+
+.
+**Test**. 
+
+
+![](Test_ACCs_Props.png){width=35%} ![](Test_OLDNEW_Prop.png){width=45%}
+
+
+**OLD NEW Accuracy by Condition**. 
+
+![](Fixed_OLDNEW_Prop.png){width=45%}![](Rand_OLDNEW_Prop.png){width=45%}
+![](Test_OLDNEW_Prop.png){width=45%}. 
+
+**Location Accuracy**
+
+![](ALL_Loc_Prop.png){width=45%}.
+

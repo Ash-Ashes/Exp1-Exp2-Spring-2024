@@ -1,0 +1,118 @@
+---
+title: "Participant_Elgibility"
+author: "A Sampson"
+format: html
+editor: visual
+---
+
+## P16317 Ver 1
+
+Requires Running Exp3_csvCombo_P163XX_X.R file first - uses created RData file
+
+Load Libraries
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(plotrix)
+```
+
+Set up using Rdata from
+
+```{r}
+
+load("P16317_291124_1_.RData")
+
+
+dat_test <- detect_exp |>
+  filter(Block =='detect_T')
+
+dat_exp <- detect_exp |>
+  filter(Block != 'detect_T')
+
+#remove error
+detect_exp_plt <- dat_exp %>%
+  filter (ACC==1)
+
+#remove too fast
+detect_exp_plt <- detect_exp %>% 
+  filter(rt > 200)  
+
+detect_exp_plt <- detect_exp_plt %>% 
+  filter(ex_rt_Outlier == 0)#recall 1 denotes outliers
+
+
+```
+
+Frequencies
+
+```{r}
+rt_summary <-detect_exp_plt %>%
+  group_by(Block, Cond ) %>%
+  summarize(mean=mean(rt,na.rm=TRUE),
+            median=median(rt,na.rm=TRUE),
+            SErt = std.error(rt,na.rm = TRUE),
+            std_dev=sd(rt,na.rm=TRUE))
+rt_summary
+
+grp_frq_dist <- detect_exp |> 
+  dplyr::mutate(
+    time_group = ggplot2::cut_width(rt, 100)
+  ) |> 
+  dplyr::group_by(time_group) |> 
+  dplyr::summarise(
+    frequency = n()
+  ) |> 
+  dplyr::mutate(
+    relative_freq = frequency/sum(frequency),
+    percent = relative_freq*100
+  )
+grp_frq_dist
+
+acc_freq_tbl <- dat_exp |>
+ dplyr::group_by(Cond, ACC) |>
+ dplyr::summarise(
+ count <- (frequency =n())
+    ) 
+grp_frq_dist
+print(acc_freq_tbl)
+
+```
+
+First Block by Exposure
+
+```{r}
+group_means <- detect_exp_plt %>%
+                group_by(Block, Cond) %>%
+                summarize(mean_rt = mean(rt),
+                          sd_rt = sd(rt))
+
+
+ggplot(group_means, aes(x = Block, 
+                        y = mean_rt,
+                        group = Cond,
+                        colour =Cond))+
+    
+  geom_point() +
+  geom_line() +
+geom_errorbar(aes(ymin = mean_rt - sd_rt,
+                    ymax = mean_rt + sd_rt),
+              width = .09)
+#  geom_errorbar(aes(ymin = mean_rt - sd_rt,
+#                    ymax = mean_rt + rt),
+#                width = .05)
+```
+
+```{r}
+#detect_exp_plt <- detect_exp_plt %>% 
+#  filter(Block == 'detect_1')
+detect_exp_plt <- detect_exp_plt %>% 
+  filter(Block != 'detect_T')
+(ggplot(data = detect_exp_plt, aes(x = Rep, y = rt, fill = Cond, colour=Cond)) +
+   geom_violin(alpha=.5) +
+    facet_wrap(vars(Cond))+
+    stat_summary(fun = mean, geom = "point", position = position_dodge(width = .9))  +
+    stat_summary(fun.data = mean_se, geom = "errorbar", width = .15, position = position_dodge(width = .9)) +
+    labs(title = "P16317_1", x = "Exposure Number", y = "rt in milliseconds"))
+
+```
