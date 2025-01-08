@@ -1,0 +1,335 @@
+---
+title: "Exp3_Sixteen_Participants"
+author: "A Sampson"
+format: html
+echo: false
+editor: visual
+---
+
+## Exp3 Time 2000ms or 1200, 1600, 2000
+
+16 participants (age 18 - 30, mean = 23, 5 Males, 11 = 1+ languages) - September - November 2024
+
+P10 - Very Low Digit span flag forward & backward (possible demographic exclusion?)
+
+P11 - ADHD diagnosis (possible demographic exclusion)
+
+P15 - Anxiety (possible demographic exclusion)
+
+Music - 6 formal training \| 10 no formal training (5 informal short term + 5 no training)
+
+(See bottom for music specific breakdown)
+
+Requires Running Exp3_csvCombo_P163XX_X.R file first - uses created RData file
+
+Input number of participants before running in second chunk
+
+Load Libraries
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(plotrix)
+```
+
+Set up using Rdata file - all subjects
+
+```{r}
+
+#| echo: false
+#| 
+SbjNum <- '16'
+load(paste(SbjNum, "_subjects_Exp3.Rda", sep = ''))
+
+dat_test <- dat_all |>
+  filter(Block =='detect_T')
+
+dat_exp <- dat_all |>
+  filter(Block != 'detect_T')
+
+#remove error
+detect_exp_plt <- dat_exp %>%
+  filter (ACC==1)
+
+#remove too fast
+detect_exp_plt <- detect_exp_plt %>% 
+  filter(rt > 200)  
+
+detect_exp_plt <- detect_exp_plt %>% 
+  filter(ex_rt_Outlier == 0)#recall 1 denotes outliers
+
+
+```
+
+**Means and Frequencies Exposure - Condition by block, Binned RT counts, and Accuracy by Condition**
+
+**Exposure Phase Means**
+
+```{r}
+#| echo: false
+rt_summary <-detect_exp_plt %>%
+  group_by(Block, Cond ) %>%
+  summarize(mean=mean(rt,na.rm=TRUE),
+            median=median(rt,na.rm=TRUE),
+            SErt = std.error(rt,na.rm = TRUE),
+            std_dev=sd(rt,na.rm=TRUE))
+rt_summary
+
+grp_frq_dist <- dat_exp |> 
+  dplyr::mutate(
+    time_group = ggplot2::cut_width(rt, 100)
+  ) |> 
+  dplyr::group_by(time_group) |> 
+  dplyr::summarise(
+    frequency = n()
+  ) |> 
+  dplyr::mutate(
+    relative_freq = frequency/sum(frequency),
+    percent = relative_freq*100
+  )
+grp_frq_dist
+
+onset_exp_dist <- dat_exp |> 
+  dplyr::group_by(Cond, Onset) |> 
+  dplyr::summarise(
+    frequency = n()
+  ) |> 
+  dplyr::mutate(
+    relative_freq = frequency/sum(frequency),
+    percent = relative_freq*100
+  )
+#onset_frq_dist <- onset_frq_dist |>
+#  mutate(across(where(is.numeric), ~ round(., 2)))
+#onset_exp_dist
+```
+
+**Accuracy by Condition**
+
+```{r}
+acc_freq_tbl <- dat_exp |>
+ dplyr::group_by(Cond, ACC) |>
+ dplyr::summarise(
+ count <- (frequency =n())
+    ) 
+acc_freq_tbl
+```
+
+**Means by Onset**
+
+```{r}
+
+
+onset_exp_mean <- detect_exp_plt |>
+  dplyr::group_by(Cond, Onset) |>
+  summarize(mean=mean(rt,na.rm=TRUE),
+            median=median(rt,na.rm=TRUE),
+            SErt = std.error(rt,na.rm = TRUE),
+            std_dev=sd(rt,na.rm=TRUE))
+onset_exp_mean <- onset_exp_mean|>
+   mutate(across(where(is.numeric), ~ round(., 0)))
+onset_exp_mean
+
+```
+
+```{r}
+#| echo: false
+
+#detect_exp_plt <- detect_exp_plt %>% 
+#  filter(Block == 'detect_1')
+
+#detect_exp_plt <- detect_exp_plt %>% 
+#  filter(Block != 'detect_T')
+#(ggplot(data = detect_exp_plt, aes(x = Rep, y = rt, fill = Cond, colour=Cond)) +
+#   geom_violin(alpha=.5) +
+#    facet_wrap(vars(Cond))+
+#    stat_summary(fun = mean, geom = "point", position = position_dodge(width = .9))  +
+#    stat_summary(fun.data = mean_se, geom = "errorbar", width = .15, position = position_dodge(width = .9)) +
+#    labs(title = "N=4_participants_Exp3", x = "Exposure Number", y = "rt in milliseconds"))
+
+```
+
+**Test - Condition mean RTs, Binned RT counts, Accuracy by Condition**
+
+```{r}
+#| echo: false
+#remove error
+detect_test_plt <- dat_test %>%
+  filter (ACC==1)
+
+#remove too fast
+detect_test_plt <- detect_test_plt %>% 
+  filter(rt > 200)  
+
+#Frequencies for remaining
+rt_summary <-detect_test_plt %>%
+  group_by(Cond) %>%
+  summarize(mean=mean(rt,na.rm=TRUE),
+            median=median(rt,na.rm=TRUE),
+            SErt = std.error(rt,na.rm = TRUE),
+            std_dev=sd(rt,na.rm=TRUE))
+rt_summary <- rt_summary|>
+   mutate(across(where(is.numeric), ~ round(., 0)))
+rt_summary
+
+grp_frq_dist <- dat_test |> 
+  dplyr::mutate(
+    time_group = ggplot2::cut_width(rt, 100)
+  ) |> 
+  dplyr::group_by(time_group) |> 
+  dplyr::summarise(
+    frequency = n()
+  ) |> 
+  dplyr::mutate(
+    relative_freq = frequency/sum(frequency),
+    percent = relative_freq*100
+  )
+grp_frq_dist <- grp_frq_dist |>
+  mutate(across(where(is.numeric), ~ round(., 2)))
+grp_frq_dist
+
+acc_freq_tbl <- dat_test |>
+ dplyr::group_by(Cond, ACC) |>
+ dplyr::summarise(
+ count <- (frequency =n())
+    ) 
+acc_freq_tbl 
+
+onset_frq_dist <- dat_test |> 
+  dplyr::group_by(Cond, Onset) |> 
+  dplyr::summarise(
+    frequency = n()
+  ) |> 
+  dplyr::mutate(
+    relative_freq = frequency/sum(frequency),
+    percent = relative_freq*100
+  )
+#onset_frq_dist <- onset_frq_dist |>
+#  mutate(across(where(is.numeric), ~ round(., 2)))
+onset_frq_dist
+
+onset_mean_dist <- detect_test_plt |>
+  dplyr::group_by(Cond, Onset) |>
+  summarize(mean=mean(rt,na.rm=TRUE),
+            median=median(rt,na.rm=TRUE),
+            SErt = std.error(rt,na.rm = TRUE),
+            std_dev=sd(rt,na.rm=TRUE))
+onset_mean_dist <- onset_mean_dist|>
+   mutate(across(where(is.numeric), ~ round(., 0)))
+onset_mean_dist
+  
+```
+
+**Exposure and Test Plots**
+
+```{r}
+#| echo: false
+group_tst_means <- detect_test_plt %>%
+                group_by(Cond) %>%
+                summarize(mean_rt = mean(rt),
+                          sd_rt = sd(rt))
+
+#
+#ggplot(group_tst_means, aes(x = Cond, 
+#                        y = mean_rt,
+#                        group = Cond,
+#                        colour =Cond))+
+#  geom_point() +
+#  geom_line() +
+#geom_errorbar(aes(ymin = mean_rt - sd_rt,
+#                    ymax = mean_rt + sd_rt),
+#              width = .09) +
+#  labs(title = "Test - Exp3 - 4 included participants - Clean RTs")
+#ggsave("Test_Exp3_4_included_participants.png")
+
+plot_all <- dat_all |>
+  filter(ACC == 1)
+
+plot_all <- plot_all |>
+  filter(ex_rt_Outlier ==0)
+
+all_block_means <- plot_all %>%
+                group_by(Block, Cond) %>%
+                summarize(mean_rt = mean(rt),
+                          sd_rt = sd(rt))
+
+ggplot(all_block_means, aes(x = Block, 
+                        y = mean_rt,
+                        group = Cond,
+                        colour =Cond))+
+    
+  geom_point() +
+  geom_line() +
+geom_errorbar(aes(ymin = mean_rt - sd_rt,
+                    ymax = mean_rt + sd_rt),
+              width = .09) +
+  labs(title = (paste("All Blocks Exp3 -", SbjNum, " included participants - Clean RTs", sep = '')))
+ggsave(paste("Test_Exp3_", SbjNum, "_included_participants.png", sep = ''))
+
+```
+
+\
+\*\*By Subject - exposure and test\*\*
+
+```{r}
+#| echo: false
+
+all_block_Sbj <- plot_all %>%
+                group_by(Sbj, Block, Cond) %>%
+                summarize(mean_rt = mean(rt),
+                          sd_rt = sd(rt))
+
+ggplot(all_block_Sbj, aes(x = Block, 
+                        y = mean_rt,
+                        group = Cond,
+                        colour =Cond))+
+  theme(axis.text.x = element_text(angle=90, vjust=.5, hjust=1))+
+  geom_point() +
+  geom_line() +
+  ylim(300,950) +
+  facet_wrap(vars(Sbj))+
+geom_errorbar(aes(ymin = mean_rt - sd_rt,
+                  ymax = mean_rt + sd_rt),
+                  width = .09) +
+  labs(title = (paste( "By Subject All Blocks Exp3 -", SbjNum, " participants - Clean RTs", sep = '')))
+ggsave(paste("Sbj_Exp3_", SbjNum ,"_participants.png", sep = ''))
+
+```
+
+**Test only By Trial**
+
+```{r}
+#| echo: false
+(ggplot(data = detect_test_plt, aes(x = TrialNum, y = rt, fill = Cond, colour=Cond)) +
+   geom_violin(alpha=.5) +
+    facet_wrap(vars(Cond))+
+    xlim(1,24) +
+    stat_summary(fun = mean, geom = "point", position = position_dodge(width = .9))  +
+#    stat_summary(fun.data = mean_se, geom = "errorbar", width = .15, position = position_dodge(width = .9)) +
+    labs(title = (paste("N=", SbjNum, "_particpants_Exp3 Test", sep = '')), x = "Trial Number", y = "rt in milliseconds"))
+
+ggsave(paste("Sbj_Exp3_", SbjNum ,"_participants.png", sep = ''))
+```
+
+Music breakdown
+
+Formal training music
+
+2 piano 12+ years & read music
+
+1 harmonium 14 years - currently studying music at the university level
+
+1 trombone 16 years & Read music
+
+1 tuba 4 years - read music
+
+1 piano 4-5 years- formal lesson RCM cannot read music - (Cross check this with written)
+
+Informal music / highschool music
+
+1 piano 3 year - private lessons, cannot read music
+
+1 piano 1 year - cannot read music
+
+3 highschool music - cannot read music
+
+5 nonmusicians
